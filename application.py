@@ -21,22 +21,23 @@ st.write('''
 # Title on sidebar
 st.sidebar.header('Your informations')
 
-
+# Importing our data_stats
+stat =  pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_stats.csv', index_col = 0)
 
 def user_input():
     '''Creating a function which generates a DataFrame, accordind to consumer's inputs '''
     
     AGE = st.sidebar.slider('Your age', 21, 69, 40)
     CNT_CHILDREN = st.sidebar.slider('Number of children', 0, 19, 1)
-    AMT_INCOME_TOTAL = st.sidebar.number_input( 'Annual Income (allowed between 26550$ and 9M$)' , min_value = 26550 , max_value = 9000000)
-    DAYS_EMPLOYED = st.sidebar.slider('Days employed', 0, 17912, 2532)
-    DAYS_REGISTRATION = st.sidebar.number_input('Last registration change (in days)', min_value = 0, max_value = 22701)
-    DAYS_ID_PUBLISH = st.sidebar.slider('Last Identity document change (in days)', 0, 7197, 2884)
-    AMT_GOODS_PRICE = st.sidebar.number_input('Good price Amount (between 40500$ and 4.05M$)', min_value = 40500, max_value = 4050000)
-    AMT_CREDIT = st.sidebar.number_input('Credit Amount(allowed between 45000$ and 4.05M$)', min_value = 45000, max_value = 4050000)
-    AMT_ANNUITY = st.sidebar.number_input('Annuity Amount (between 1980$ and 258026$)', 1980, 258026, 27986)
-    EXT_SOURCE_2 = st.sidebar.slider('Extern source 2', 0.0, 1.0, 0.53)
-    EXT_SOURCE_3 = st.sidebar.slider('Extern source 3', 0.0, 1.0, 0.51)
+    AMT_INCOME_TOTAL = st.sidebar.number_input( 'Annual Income' , min_value = stat['AMT_INCOME_TOTAL']['min'] , max_value = stat['AMT_INCOME_TOTAL']['max'])
+    DAYS_EMPLOYED = st.sidebar.number_input('Days employed',  min_value = stat['DAYS_EMPLOYED']['min'],  max_value = stat['DAYS_EMPLOYED']['max'])
+    DAYS_REGISTRATION = st.sidebar.number_input('Last registration change (in days)', min_value = stat['DAYS_REGISTRATION']['min'], max_value = stat['DAYS_REGISTRATION']['max'])
+    DAYS_ID_PUBLISH = st.sidebar.number_input('Last Identity document change (in days)', stat['DAYS_ID_PUBLISH']['min'], stat['DAYS_ID_PUBLISH']['max'])
+    AMT_GOODS_PRICE = st.sidebar.number_input('Good price Amount', min_value = stat['AMT_GOODS_PRICE']['min'], max_value = stat['AMT_GOODS_PRICE']['max'])
+    AMT_CREDIT = st.sidebar.number_input('Credit Amount', min_value = stat['AMT_CREDIT']['min'], max_value = stat['AMT_CREDIT']['max'])
+    AMT_ANNUITY = st.sidebar.number_input('Annuity Amount', min_value = stat['AMT_ANNUITY']['min'], max_value = AMT_INCOME_TOTAL)
+    EXT_SOURCE_2 = st.sidebar.slider('Extern source 2', stat['EXT_SOURCE_2']['min'], stat['EXT_SOURCE_2']['max'], 0.53)
+    EXT_SOURCE_3 = st.sidebar.slider('Extern source 3', stat['EXT_SOURCE_3']['min'], stat['EXT_SOURCE_3']['max'], 0.51)
     
     
     
@@ -64,10 +65,8 @@ def user_input():
 # df is the output of our function
 df = user_input()
 
-if st.checkbox('See results'):
-     #Printing inputs results
-     st.subheader('Your Data')
-     st.write(df)
+st.subheader('Your Data')
+st.write(df)
 
 ##################################################################################################################
 # Creating our 4 other features for model
@@ -109,16 +108,10 @@ df['AGE'] = df['AGE'].apply(encode)
 
 ###################################################################################################################
 
-# Importing our final dataframe used for ML
-
-X_train_des = pd.read_csv('C:/Users/VOLANTE/Desktop/OPEN PYTHON/projet 7/stats.csv', index_col = 0)
-
-y_train = pd.read_csv('C:/Users/VOLANTE/Desktop/OPEN PYTHON/projet 7/y_train_credit_final.csv', index_col = 0)
-X_train = pd.read_csv('C:/Users/VOLANTE/Desktop/OPEN PYTHON/projet 7/X_train_credit_final.csv', index_col = 0)
-
-
-# Stats
-stat = X_train_des.describe()
+# Importing our X_train and y_train
+y_train = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/y_train.csv', index_col = 0)
+X_train = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_train.csv', index_col =0)
+X_train.drop(['Unnamed: 0.1'], axis =1, inplace = True)
 
 # MinMaxScaler formula
 # X_scaled = (X - X.min(axis=0)) / (X.max(axis=0) - X.min(axis=0))
@@ -155,35 +148,68 @@ df.loc[0, 'CREDIT_GOOD_PERCENT'] = (df.loc[0, 'CREDIT_GOOD_PERCENT'] - stat['CRE
 
 ####################################################################################################################
 
-# Importing our best model
+# Importing our best model for prediction
 from sklearn.ensemble import GradientBoostingClassifier
 
 GB = GradientBoostingClassifier(max_depth = 8, max_features = 'sqrt',
                            min_samples_leaf = 50, min_samples_split = 1000,
                            random_state = 10, subsample = 0.8)
 
+####################################################################################################################
+
+# Preprocessing
+from sklearn.preprocessing import MinMaxScaler
+
+# Giving 0 for min and 1 for max.. for the rest the proportion
+scaler = MinMaxScaler()
+
+#Scaling X_train excepted  'age'
+for col in X_train.drop('AGE', axis = 1).columns :
+    X_train.loc[:, col] = scaler.fit_transform(X_train[col].values.reshape(-1, 1))
+    
+# Encoding 'AGE'
+from sklearn.preprocessing import LabelEncoder
+
+# Creating OneHotEncoder
+encoder = LabelEncoder()
+
+# Encoding 'AGE' for X_train
+X_train['AGE'] = encoder.fit_transform(X_train['AGE'].values.reshape(-1, 1))
+
+
 
 ####################################################################################################################
 
-# Fitting model
-GB.fit(X_train, y_train.values.ravel())
+# Informations
+if st.button('How does it work?'):
+    st.write('This app is based on analysis of more than 200.000 loans past')
+    st.write('To predict issue of your loan request, we use a machine learning algorithm')
+    st.write('')
+    st.write('We use all your input features and we add 4 more important features:')
+    st.write('')
+    st.write('- The amount of your credit / Your total income amount')
+    st.write('- The amount of your annuity / Your total income amount')
+    st.write('- The amount of your annuity / Your credit amount')
+    st.write('- The amount of your credit / Your good price amount')
 
-print(df)
-# Prediction
-prediction = GB.predict(df)
 
-# Printing result for consumer
-if prediction == 0:
-    st.write('ACCEPTED')
-else :
-    st.write('REFUSED')
+
+
+# If button is clicked, then we apply our algorithm for input datas and give result
+if st.button('See results'):
     
+    
+    # Fitting model
+    GB.fit(X_train, y_train.values.ravel())
 
-
-
-
-
-
+    # Prediction
+    prediction = GB.predict(df)
+    
+    if prediction == 0:
+        st.write('ACCEPTED')
+    else :
+        st.write('REFUSED')
+    
 
 
 
