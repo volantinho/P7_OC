@@ -111,7 +111,7 @@ df['AGE'] = df['AGE'].apply(encode)
 # Importing our X_train and y_train
 y_train = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/y_train.csv', index_col = 0)
 X_train = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_train.csv', index_col =0)
-X_train.drop(['Unnamed: 0.1'], axis =1, inplace = True)
+
 
 # MinMaxScaler formula
 # X_scaled = (X - X.min(axis=0)) / (X.max(axis=0) - X.min(axis=0))
