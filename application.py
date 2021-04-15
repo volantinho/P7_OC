@@ -194,7 +194,6 @@ if st.button('How does it work?'):
 
 
 
-
 # If button is clicked, then we apply our algorithm for input datas and give result
 if st.button('See results'):
     
