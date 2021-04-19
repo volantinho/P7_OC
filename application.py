@@ -7,7 +7,7 @@ Created on Sat Apr  3 17:58:41 2021
 
 import pandas as pd
 import streamlit as st
-
+import numpy as np
 
 
 st.title('Prêt à dépenser BANK')
@@ -28,14 +28,14 @@ def user_input():
     '''Creating a function which generates a DataFrame, accordind to consumer's inputs '''
     
     AGE = st.sidebar.slider('Your age', 21, 69, 40)
-    CNT_CHILDREN = st.sidebar.slider('Number of children', 0, 19, 1)
-    AMT_INCOME_TOTAL = st.sidebar.number_input( 'Annual Income' , min_value = int(stat['AMT_INCOME_TOTAL']['min']) , max_value = int(stat['AMT_INCOME_TOTAL']['max']))
-    DAYS_EMPLOYED = st.sidebar.number_input('Days employed',  min_value = int(stat['DAYS_EMPLOYED']['min']),  max_value = int(stat['DAYS_EMPLOYED']['max']))
-    DAYS_REGISTRATION = st.sidebar.number_input('Last registration change (in days)', min_value = int(stat['DAYS_REGISTRATION']['min']), max_value = int(stat['DAYS_REGISTRATION']['max']))
-    DAYS_ID_PUBLISH = st.sidebar.number_input('Last Identity document change (in days)', int(stat['DAYS_ID_PUBLISH']['min']), int(stat['DAYS_ID_PUBLISH']['max']))
-    AMT_GOODS_PRICE = st.sidebar.number_input('Good price Amount', min_value = int(stat['AMT_GOODS_PRICE']['min']), max_value = int(stat['AMT_GOODS_PRICE']['max']))
-    AMT_CREDIT = st.sidebar.number_input('Credit Amount', min_value = int(stat['AMT_CREDIT']['min']), max_value = int(stat['AMT_CREDIT']['max']))
-    AMT_ANNUITY = st.sidebar.number_input('Annuity Amount', min_value = int(stat['AMT_ANNUITY']['min']), max_value = int(AMT_INCOME_TOTAL))
+    CNT_CHILDREN = st.sidebar.slider('Number of children', 0, 19, 1) 
+    AMT_INCOME_TOTAL = st.sidebar.number_input( 'Annual Income (Between {}$ and {}$)'.format(stat['AMT_INCOME_TOTAL']['min'],  stat['AMT_INCOME_TOTAL']['max']) , min_value = stat['AMT_INCOME_TOTAL']['min'] , max_value = stat['AMT_INCOME_TOTAL']['max'])
+    DAYS_EMPLOYED = st.sidebar.number_input('Days employed (Between {} and {}'.format(int(stat['DAYS_EMPLOYED']['min']), int(stat['DAYS_EMPLOYED']['max'])),  min_value = int(stat['DAYS_EMPLOYED']['min']),  max_value = int(stat['DAYS_EMPLOYED']['max']))
+    DAYS_REGISTRATION = st.sidebar.number_input('Last registration change (in days, between {} and {})'.format( int(stat['DAYS_REGISTRATION']['min']), int(stat['DAYS_REGISTRATION']['max'])), min_value = int(stat['DAYS_REGISTRATION']['min']), max_value = int(stat['DAYS_REGISTRATION']['max']))
+    DAYS_ID_PUBLISH = st.sidebar.number_input('Last Identity document change (in days, between {} and {})'.format(int(stat['DAYS_ID_PUBLISH']['min']), int(stat['DAYS_ID_PUBLISH']['max'])), min_value = int(stat['DAYS_ID_PUBLISH']['min']), max_value = int(stat['DAYS_ID_PUBLISH']['max']))
+    AMT_GOODS_PRICE = st.sidebar.number_input('Good price Amount (Between {}$ and {}$ allowed)'.format(stat['AMT_GOODS_PRICE']['min'], stat['AMT_GOODS_PRICE']['max']), min_value = stat['AMT_GOODS_PRICE']['min'], max_value = stat['AMT_GOODS_PRICE']['max'])
+    AMT_CREDIT = st.sidebar.number_input('Credit Amount', min_value = stat['AMT_CREDIT']['min'], max_value = (stat['CREDIT_GOOD_PERCENT']['max']) * AMT_GOODS_PRICE)
+    AMT_ANNUITY = st.sidebar.number_input('Annuity Amount', min_value = (stat['CREDIT_ANNUITY_PERCENT']['min'])*AMT_CREDIT, max_value = (stat['CREDIT_ANNUITY_PERCENT']['max'])*AMT_CREDIT)
     EXT_SOURCE_2 = st.sidebar.slider('Extern source 2', stat['EXT_SOURCE_2']['min'], stat['EXT_SOURCE_2']['max'], 0.53)
     EXT_SOURCE_3 = st.sidebar.slider('Extern source 3', stat['EXT_SOURCE_3']['min'], stat['EXT_SOURCE_3']['max'], 0.51)
     
@@ -191,16 +191,30 @@ if st.button('How does it work?'):
     st.write('- The amount of your annuity / Your total income amount')
     st.write('- The amount of your annuity / Your credit amount')
     st.write('- The amount of your credit / Your good price amount')
+    st.write('')
+    st.write('In other words, your input informations must respect some statistical values (according to our bank policy)')
 
 
+
+# Converting in arrays numpy
+
+df = np.array(df)
+X_train =  np.array(X_train)
+y_train =  np.array(y_train)
+
+
+
+# Fitting model
+GB.fit(X_train, y_train)
 
 # If button is clicked, then we apply our algorithm for input datas and give result
 if st.button('See results'):
     
     
-    # Fitting model
-    GB.fit(X_train, y_train.values.ravel())
-
+   
+    
+    
+    #import pdb;pdb.set_trace()
     # Prediction
     prediction = GB.predict(df)
     
