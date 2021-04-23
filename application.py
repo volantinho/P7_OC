@@ -83,6 +83,46 @@ df = user_input()
 st.subheader('Your Data. Please check before validate!')
 st.write(df)
 
+########################################################################################################################
+
+# Informations
+if st.button('How does it work?'):
+    st.write('This app is based on analysis of more than 200.000 loans past')
+    st.write('To predict issue of your loan request, we use a machine learning algorithm')
+    st.write('')
+    st.write('We use all your input features and we add 4 more important features:')
+    st.write('')
+    st.write('- The amount of your credit / Your total income amount')
+    st.write('- The amount of your annuity / Your total income amount')
+    st.write('- The amount of your annuity / Your credit amount')
+    st.write('- The amount of your credit / Your good price amount')
+    st.write('')
+    st.write('In other words, your input informations must respect some statistical values (according to our bank policy)')
+    st.write('Just below we give you some stats')
+
+##############################################################################################################################
+# Printing global statistics when clickin button
+if st.button('Global statistics'):
+    
+        
+    st.write('Age :    minimum: {}    maximum: {}    median: {}'.format(21, 69, 40))
+    st.write('Number of children :    minimum: {}    maximum: {}    median: {}'.format(stat['CNT_CHILDREN']['min'], stat['CNT_CHILDREN']['max'], stat['CNT_CHILDREN']['50%']))
+    st.write('Annual income :    minimum: {}    maximum: {}    median: {}'.format(stat['AMT_INCOME_TOTAL']['min'], stat['AMT_INCOME_TOTAL']['max'], stat['AMT_INCOME_TOTAL']['50%']))
+    st.write('Days employed :    minimum: {}    maximum: {}    median: {}'.format(stat['DAYS_EMPLOYED']['min'], stat['DAYS_EMPLOYED']['max'], stat['DAYS_EMPLOYED']['50%']))
+    st.write('Last registration change :    minimum: {}    maximum: {}    median: {}'.format(stat['DAYS_REGISTRATION']['min'], stat['DAYS_REGISTRATION']['max'], stat['DAYS_REGISTRATION']['50%']))
+    st.write('Last Identity document change :    minimum: {}    maximum: {}    median: {}'.format(round(stat['DAYS_ID_PUBLISH']['min'], 2), round(stat['DAYS_ID_PUBLISH']['max'], 2), round(stat['DAYS_ID_PUBLISH']['50%'], 2)))
+    st.write('Good price Amount :    minimum: {}    maximum: {}    median: {}'.format(round(stat['AMT_GOODS_PRICE']['min'], 2), round(stat['AMT_GOODS_PRICE']['max'], 2), round(stat['AMT_GOODS_PRICE']['50%'], 2)))
+    st.write('Credit Amount :    minimum: {}    maximum: {}    median: {}'.format(round(stat['AMT_CREDIT']['min'], 2), round(stat['AMT_CREDIT']['max'], 2), round(stat['AMT_CREDIT']['50%'], 2)))
+    st.write('Annuity Amount:    minimum: {}    maximum: {}    median: {}'.format(stat['AMT_ANNUITY']['min'], stat['AMT_ANNUITY']['max'], stat['AMT_ANNUITY']['50%']))
+    st.write('Extern source 2 :    minimum: {}    maximum: {}    median: {}'.format(round(stat['EXT_SOURCE_2']['min'], 2), round(stat['EXT_SOURCE_2']['max'], 2), round(stat['EXT_SOURCE_2']['50%'], 2)))
+    st.write('Extern source 3 :    minimum: {}    maximum: {}    median: {}'.format(round(stat['EXT_SOURCE_3']['min'], 2), round(stat['EXT_SOURCE_3']['max'], 2), round(stat['EXT_SOURCE_3']['50%'], 2)))
+    st.write('Amount Credit / Annual income :    minimum: {}    maximum: {}    median: {}'.format(round(stat['CREDIT_INCOME_PERCENT']['min'], 2), round(stat['CREDIT_INCOME_PERCENT']['max'], 2), round(stat['CREDIT_INCOME_PERCENT']['50%'], 2)))
+    st.write('Annuity amount / Annual amount :    minimum: {}    maximum: {}    median: {}'.format(round(stat['ANNUITY_INCOME_PERCENT']['min'], 2), round(stat['ANNUITY_INCOME_PERCENT']['max'], 2), round(stat['ANNUITY_INCOME_PERCENT']['50%'], 2)))
+    st.write('Annuity amount / Credit amount :    minimum: {}    maximum: {}    median: {}'.format(round(stat['CREDIT_ANNUITY_PERCENT']['min'], 2), round(stat['CREDIT_ANNUITY_PERCENT']['max'], 2), round(stat['CREDIT_ANNUITY_PERCENT']['50%'], 2)))
+    st.write('Amount credit / Good price amount :    minimum: {}    maximum: {}    median: {}'.format(round(stat['CREDIT_GOOD_PERCENT']['min'], 2), round(stat['CREDIT_GOOD_PERCENT']['max'], 2), round(stat['CREDIT_GOOD_PERCENT']['50%'], 2)))
+    
+        
+        
 ##################################################################################################################
 def adding_columns(df):
 
@@ -186,20 +226,6 @@ def preprocessing (X_train):
 
 ####################################################################################################################
 
-# Informations
-if st.button('How does it work?'):
-    st.write('This app is based on analysis of more than 200.000 loans past')
-    st.write('To predict issue of your loan request, we use a machine learning algorithm')
-    st.write('')
-    st.write('We use all your input features and we add 4 more important features:')
-    st.write('')
-    st.write('- The amount of your credit / Your total income amount')
-    st.write('- The amount of your annuity / Your total income amount')
-    st.write('- The amount of your annuity / Your credit amount')
-    st.write('- The amount of your credit / Your good price amount')
-    st.write('')
-    st.write('In other words, your input informations must respect some statistical values (according to our bank policy)')
-
 
 if st.sidebar.button('Validate/See results'):
     
@@ -232,7 +258,8 @@ if st.sidebar.button('Validate/See results'):
         st.write("Under 0 you have the probability that you won't be in defaut payment")
         st.write("Under 1 you have the probability you will be in defaut payment")
 
-
+ 
+        
 
 
 
