@@ -8,13 +8,13 @@ Created on Sat Apr  3 17:58:41 2021
 import pandas as pd
 import streamlit as st
 import numpy as np
+import pickle
 
-# Importing our best model for prediction
-from sklearn.ensemble import GradientBoostingClassifier
 
-GB = GradientBoostingClassifier(max_depth = 8, max_features = 'sqrt',
-                           min_samples_leaf = 50, min_samples_split = 1000,
-                           random_state = 10, subsample = 0.8)
+# load the model from disk
+km = pickle.load (open ('clustering', 'rb'))
+GB = pickle.load (open ('xgboost', 'rb'))
+    
 
 # Importing our data_stats
 stat =  pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_stats.csv', index_col = 0)
@@ -22,6 +22,17 @@ stat =  pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_stats.csv', index_c
 # Importing our X_train and y_train
 y_train = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/y_train.csv', index_col = 0)
 X_train = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_train.csv', index_col =0)
+
+# Importing our 5 stats_table, each one for each cluster found by our kmeans
+stat0 = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat0.csv', index_col = 0)
+stat1 = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat1.csv', index_col = 0)
+stat2 = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat2.csv', index_col = 0)
+stat3 = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat3.csv', index_col = 0)
+stat4 = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat4.csv', index_col = 0)
+
+
+
+
 
 ############################################################################################################################
 
@@ -87,10 +98,10 @@ st.write(df)
 
 # Informations
 if st.button('How does it work?'):
-    st.write('This app is based on analysis of more than 200.000 loans past')
+    st.write('This app is based on analysis of almost 200.000 loans past')
     st.write('To predict issue of your loan request, we use a machine learning algorithm')
     st.write('')
-    st.write('We use all your input features and we add 4 more important features:')
+    st.write('We use all your input features and we add 4 important features:')
     st.write('')
     st.write('- The amount of your credit / Your total income amount')
     st.write('- The amount of your annuity / Your total income amount')
@@ -98,31 +109,18 @@ if st.button('How does it work?'):
     st.write('- The amount of your credit / Your good price amount')
     st.write('')
     st.write('In other words, your input informations must respect some statistical values (according to our bank policy)')
-    st.write('Just below we give you some stats')
+    st.write('Just below we give you some statistics')
+    st.write('When having completed your informations, you could either see result, or compare your informations with people in the same group as you (actually 5 groups existing)')
 
 ##############################################################################################################################
-# Printing global statistics when clickin button
+# Printing global statistics when clicking button
 if st.button('Global statistics'):
-    
-        
-    st.write('Age :    minimum: {}    maximum: {}    median: {}'.format(21, 69, 40))
-    st.write('Number of children :    minimum: {}    maximum: {}    median: {}'.format(stat['CNT_CHILDREN']['min'], stat['CNT_CHILDREN']['max'], stat['CNT_CHILDREN']['50%']))
-    st.write('Annual income :    minimum: {}    maximum: {}    median: {}'.format(stat['AMT_INCOME_TOTAL']['min'], stat['AMT_INCOME_TOTAL']['max'], stat['AMT_INCOME_TOTAL']['50%']))
-    st.write('Days employed :    minimum: {}    maximum: {}    median: {}'.format(stat['DAYS_EMPLOYED']['min'], stat['DAYS_EMPLOYED']['max'], stat['DAYS_EMPLOYED']['50%']))
-    st.write('Last registration change :    minimum: {}    maximum: {}    median: {}'.format(stat['DAYS_REGISTRATION']['min'], stat['DAYS_REGISTRATION']['max'], stat['DAYS_REGISTRATION']['50%']))
-    st.write('Last Identity document change :    minimum: {}    maximum: {}    median: {}'.format(round(stat['DAYS_ID_PUBLISH']['min'], 2), round(stat['DAYS_ID_PUBLISH']['max'], 2), round(stat['DAYS_ID_PUBLISH']['50%'], 2)))
-    st.write('Good price Amount :    minimum: {}    maximum: {}    median: {}'.format(round(stat['AMT_GOODS_PRICE']['min'], 2), round(stat['AMT_GOODS_PRICE']['max'], 2), round(stat['AMT_GOODS_PRICE']['50%'], 2)))
-    st.write('Credit Amount :    minimum: {}    maximum: {}    median: {}'.format(round(stat['AMT_CREDIT']['min'], 2), round(stat['AMT_CREDIT']['max'], 2), round(stat['AMT_CREDIT']['50%'], 2)))
-    st.write('Annuity Amount:    minimum: {}    maximum: {}    median: {}'.format(stat['AMT_ANNUITY']['min'], stat['AMT_ANNUITY']['max'], stat['AMT_ANNUITY']['50%']))
-    st.write('Extern source 2 :    minimum: {}    maximum: {}    median: {}'.format(round(stat['EXT_SOURCE_2']['min'], 2), round(stat['EXT_SOURCE_2']['max'], 2), round(stat['EXT_SOURCE_2']['50%'], 2)))
-    st.write('Extern source 3 :    minimum: {}    maximum: {}    median: {}'.format(round(stat['EXT_SOURCE_3']['min'], 2), round(stat['EXT_SOURCE_3']['max'], 2), round(stat['EXT_SOURCE_3']['50%'], 2)))
-    st.write('Amount Credit / Annual income :    minimum: {}    maximum: {}    median: {}'.format(round(stat['CREDIT_INCOME_PERCENT']['min'], 2), round(stat['CREDIT_INCOME_PERCENT']['max'], 2), round(stat['CREDIT_INCOME_PERCENT']['50%'], 2)))
-    st.write('Annuity amount / Annual amount :    minimum: {}    maximum: {}    median: {}'.format(round(stat['ANNUITY_INCOME_PERCENT']['min'], 2), round(stat['ANNUITY_INCOME_PERCENT']['max'], 2), round(stat['ANNUITY_INCOME_PERCENT']['50%'], 2)))
-    st.write('Annuity amount / Credit amount :    minimum: {}    maximum: {}    median: {}'.format(round(stat['CREDIT_ANNUITY_PERCENT']['min'], 2), round(stat['CREDIT_ANNUITY_PERCENT']['max'], 2), round(stat['CREDIT_ANNUITY_PERCENT']['50%'], 2)))
-    st.write('Amount credit / Good price amount :    minimum: {}    maximum: {}    median: {}'.format(round(stat['CREDIT_GOOD_PERCENT']['min'], 2), round(stat['CREDIT_GOOD_PERCENT']['max'], 2), round(stat['CREDIT_GOOD_PERCENT']['50%'], 2)))
-    
-        
-        
+    st.write(stat)
+    st.write('count : Number of persons')
+    st.write('mean : The mean for each feature')
+    st.write('std : The stud for each feature (We can define the stud as the the mean of the deviations from the mean')
+    st.write('Percentile (25%, 50%, 75%) : For exemple 25% : For each feature, 25% of people have a lower (or equal) value than the indicated value and 75% have an higher value') 
+    st.write('min/max : The minimum/maximum value for each feature')
 ##################################################################################################################
 def adding_columns(df):
 
@@ -224,8 +222,9 @@ def preprocessing (X_train):
 
 
 
-####################################################################################################################
 
+
+####################################################################################################################
 
 if st.sidebar.button('Validate/See results'):
     
@@ -238,11 +237,6 @@ if st.sidebar.button('Validate/See results'):
     X_train =  np.array(X_train)
     y_train =  np.array(y_train)
 
-    # Fitting model
-    GB.fit(X_train, y_train)
-
-    
-    #import pdb;pdb.set_trace()
     # Prediction
     prediction = GB.predict(df)
     prob = GB.predict_proba(df)
@@ -258,7 +252,17 @@ if st.sidebar.button('Validate/See results'):
         st.write("Under 0 you have the probability that you won't be in defaut payment")
         st.write("Under 1 you have the probability you will be in defaut payment")
 
- 
+    
+        
+if st.sidebar.button('Compare'):
+     
+    adding_columns(df)
+    scaling(df)
+    df = np.array(df)
+     
+    # Getting prediction
+    pred = km.predict(df)
+    st.write(km.labels_[pred])       
         
 
 
