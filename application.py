@@ -11,27 +11,35 @@ import numpy as np
 import pickle
 
 
+# Files importations####################################################################################################
+
+# 12 statistics table (12 clusters)
+
+stat0 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat0.csv', index_col = 0)
+stat1 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat1.csv', index_col = 0)
+stat2 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat2.csv', index_col = 0)
+stat3 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat3.csv', index_col = 0)
+stat4 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat4.csv', index_col = 0)
+stat5 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat5.csv', index_col = 0)
+stat6 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat6.csv', index_col = 0)
+stat7 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat7.csv', index_col = 0)
+stat8 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat8.csv', index_col = 0)
+stat9 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat9.csv', index_col = 0)
+stat10 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat10.csv', index_col = 0)
+stat11 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat11.csv', index_col = 0)
+
+
 # load the model from disk
 km = pickle.load (open ('clustering', 'rb'))
 GB = pickle.load (open ('xgboost', 'rb'))
     
 
-# Importing our data_stats
+# Importing our global stats
 stat =  pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_stats.csv', index_col = 0)
 
 # Importing our X_train and y_train
 y_train = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/y_train.csv', index_col = 0)
 X_train = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_train.csv', index_col =0)
-
-# Importing our 5 stats_table, each one for each cluster found by our kmeans
-stat0 = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat0.csv', index_col = 0)
-stat1 = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat1.csv', index_col = 0)
-stat2 = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat2.csv', index_col = 0)
-stat3 = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat3.csv', index_col = 0)
-stat4 = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat4.csv', index_col = 0)
-
-
-
 
 
 ############################################################################################################################
@@ -110,19 +118,30 @@ if st.button('How does it work?'):
     st.write('')
     st.write('In other words, your input informations must respect some statistical values (according to our bank policy)')
     st.write('Just below we give you some statistics')
-    st.write('When having completed your informations, you could either see result, or compare your informations with people in the same group as you (actually 5 groups existing)')
+    st.write('When having completed your informations, you could either see result, or compare your informations with people in the same group as you (actually 12 groups existing)')
+
+###########################################################################################################################
+def stat_explanation():
+    ''' This function returns explanations of descriptive statistics'''
+    
+    
+    st.write('count : Number of persons in the group')
+    st.write('mean : The mean for each feature')
+    st.write('std : The stud for each feature (We can define the stud as the the mean of the deviations from the mean')
+    st.write('Percentile (25%, 50%, 75%) : For exemple 25% : For each feature, 25% of people have a lower (or equal) value than the indicated value and 75% have an higher value') 
+    st.write('min/max : The minimum/maximum value for each feature')
+
+
 
 ##############################################################################################################################
 # Printing global statistics when clicking button
 if st.button('Global statistics'):
     st.write(stat)
-    st.write('count : Number of persons')
-    st.write('mean : The mean for each feature')
-    st.write('std : The stud for each feature (We can define the stud as the the mean of the deviations from the mean')
-    st.write('Percentile (25%, 50%, 75%) : For exemple 25% : For each feature, 25% of people have a lower (or equal) value than the indicated value and 75% have an higher value') 
-    st.write('min/max : The minimum/maximum value for each feature')
+    stat_explanation()
+    
 ##################################################################################################################
 def adding_columns(df):
+    '''This function adds 4 columns according to our model'''
 
     # Creating our 4 other features for model
     df['CREDIT_INCOME_PERCENT'] = df['AMT_CREDIT'] / df['AMT_INCOME_TOTAL']
@@ -134,6 +153,9 @@ def adding_columns(df):
 ##################################################################################################################
 #Encoding AGE
 def encode(x):
+    '''This function encodes AGE'''
+    
+    
     if 20.0 <x<= 25.0:
         return 0
     elif 25.0 < x <= 30.0:
@@ -156,13 +178,13 @@ def encode(x):
         return 9
     
     
-    
+# Apply    
 df['AGE'] = df['AGE'].apply(encode)
 
 ###################################################################################################################
 
 
-
+# According to our model we scale our data
 # MinMaxScaler formula
 # X_scaled = (X - X.min(axis=0)) / (X.max(axis=0) - X.min(axis=0))
 
@@ -201,6 +223,9 @@ def scaling(df):
 
 
 def preprocessing (X_train):
+    '''Global preprocessing for X_train'''
+    
+    
     # Preprocessing
     from sklearn.preprocessing import MinMaxScaler
 
@@ -262,7 +287,66 @@ if st.sidebar.button('Compare'):
      
     # Getting prediction
     pred = km.predict(df)
-    st.write(km.labels_[pred])       
+    
+    if pred == 0:
+        st.write('Satistics of the group you belong to:')
+        st.write(stat0)
+        stat_explanation()
+        
+    elif pred == 1:
+        st.write('Satistics of the group you belong to:')
+        st.write(stat1)
+        stat_explanation()
+        
+    elif pred == 2:
+        st.write('Satistics of the group you belong to:')
+        st.write(stat2)
+        stat_explanation()
+        
+    elif pred == 3:
+        st.write('Satistics of the group you belong to:')
+        st.write(stat3)
+        stat_explanation()
+        
+    elif pred == 4:
+        st.write('Satistics of the group you belong to:')
+        st.write(stat4)
+        stat_explanation()
+        
+    elif pred == 5:
+        st.write('Satistics of the group you belong to:')
+        st.write(stat5)
+        stat_explanation()
+        
+    elif pred == 6:
+        st.write('Satistics of the group you belong to:')
+        st.write(stat6)
+        stat_explanation()
+        
+    elif pred == 7:
+        st.write('Satistics of the group you belong to:')
+        st.write(stat7)
+        stat_explanation()
+        
+    elif pred == 8:
+        st.write('Satistics of the group you belong to:')
+        st.write(stat8)
+        stat_explanation()
+        
+    elif pred == 9:
+        st.write('Satistics of the group you belong to:')
+        st.write(stat9)
+        stat_explanation()
+        
+    elif pred == 10:
+        st.write('Satistics of the group you belong to:')
+        st.write(stat10)
+        stat_explanation()
+        
+    else:
+        st.write('Satistics of the group you belong to:')
+        st.write(stat11)
+        stat_explanation()
         
 
 
