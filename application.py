@@ -14,18 +14,18 @@ import pickle
 # Files importations####################################################################################################
 
 # 12 statistics table (12 clusters)
-stat0 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat1.csv', index_col = 0)
-stat1 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat1.csv', index_col = 0)
-stat2 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat2.csv', index_col = 0)
-stat3 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat3.csv', index_col = 0)
-stat4 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat4.csv', index_col = 0)
-stat5 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat5.csv', index_col = 0)
-stat6 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat6.csv', index_col = 0)
-stat7 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat7.csv', index_col = 0)
-stat8 = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat8.csv', index_col = 0)
-stat9 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat9.csv', index_col = 0)
-stat10 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat10.csv', index_col = 0)
-stat11 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat11.csv', index_col = 0)
+stat0 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat1.csv', index_col = 0)
+stat1 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat1.csv', index_col = 0)
+stat2 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat2.csv', index_col = 0)
+stat3 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat3.csv', index_col = 0)
+stat4 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat4.csv', index_col = 0)
+stat5 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat5.csv', index_col = 0)
+stat6 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat6.csv', index_col = 0)
+stat7 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat7.csv', index_col = 0)
+stat8 = pd.read_csv('C:/Users/VOLANTE/Desktop/projet_7/stat8.csv', index_col = 0)
+stat9 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat9.csv', index_col = 0)
+stat10 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat10.csv', index_col = 0)
+stat11 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat11.csv', index_col = 0)
 
 
 # load the model from disk
