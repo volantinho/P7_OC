@@ -16,18 +16,18 @@ import pickle
 # 12 statistics table (12 clusters)
 
 
-sta0 = st.cache (pd.read_csv) ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat1.csv', index_col = 0)
-stat1 = st.cache (pd.read_csv) ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat1.csv', index_col = 0)
-stat2 = st.cache (pd.read_csv) ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat2.csv', index_col = 0)
-stat3 = st.cache (pd.read_csv) ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat3.csv', index_col = 0)
-stat4 = st.cache (pd.read_csv) ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat4.csv', index_col = 0)
-stat5 = st.cache (pd.read_csv) ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat5.csv', index_col = 0)
-stat6 = st.cache (pd.read_csv) ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat6.csv', index_col = 0)
-stat7 = st.cache (pd.read_csv) ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat7.csv', index_col = 0)
-stat8 = st.cache (pd.read_csv)('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat8.csv', index_col = 0)
-stat9 = st.cache (pd.read_csv) ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat9.csv', index_col = 0)
-stat10 = st.cache (pd.read_csv) ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat10.csv', index_col = 0)
-stat11 = st.cache (pd.read_csv) ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat11.csv', index_col = 0)
+sta0 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat1.csv', index_col = 0)
+stat1 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat1.csv', index_col = 0)
+stat2 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat2.csv', index_col = 0)
+stat3 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat3.csv', index_col = 0)
+stat4 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat4.csv', index_col = 0)
+stat5 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat5.csv', index_col = 0)
+stat6 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat6.csv', index_col = 0)
+stat7 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat7.csv', index_col = 0)
+stat8 = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat8.csv', index_col = 0)
+stat9 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat9.csv', index_col = 0)
+stat10 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat10.csv', index_col = 0)
+stat11 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat11.csv', index_col = 0)
 
 
 # load the model from disk
@@ -36,11 +36,11 @@ GB = pickle.load (open ('xgboost', 'rb'))
     
 
 # Importing our global stats
-stat =  st.cache (pd.read_csv)('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_stats.csv', index_col = 0)
+stat =  pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_stats.csv', index_col = 0)
 
 # Importing our X_train and y_train
-y_train = st.cache (pd.read_csv)('C:/Users/VOLANTE/anaconda3/envs/OC/P7/y_train.csv', index_col = 0)
-X_train = st.cache (pd.read_csv)('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_train.csv', index_col =0)
+y_train = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/y_train.csv', index_col = 0)
+X_train = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_train.csv', index_col =0)
 
 
 ############################################################################################################################
