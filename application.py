@@ -14,9 +14,7 @@ import pickle
 # Files importations####################################################################################################
 
 # 12 statistics table (12 clusters)
-
-
-sta0 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat1.csv', index_col = 0)
+stat0 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat1.csv', index_col = 0)
 stat1 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat1.csv', index_col = 0)
 stat2 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat2.csv', index_col = 0)
 stat3 = pd.read_csv ('C:/Users/VOLANTE/anaconda3/envs/OC/P7/stat3.csv', index_col = 0)
