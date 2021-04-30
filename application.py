@@ -9,23 +9,25 @@ import pandas as pd
 import streamlit as st
 import numpy as np
 import pickle
-
+import os
 
 # Files importations####################################################################################################
 
 # 12 statistics table (12 clusters)
-stat0 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat0.csv', index_col = 0)
-stat1 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat1.csv', index_col = 0)
-stat2 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat2.csv', index_col = 0)
-stat3 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat3.csv', index_col = 0)
-stat4 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat4.csv', index_col = 0)
-stat5 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat5.csv', index_col = 0)
-stat6 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat6.csv', index_col = 0)
-stat7 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat7.csv', index_col = 0)
-stat8 = pd.read_csv('C:/Users/VOLANTE/Desktop/projet_7/stat8.csv', index_col = 0)
-stat9 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat9.csv', index_col = 0)
-stat10 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat10.csv', index_col = 0)
-stat11 = pd.read_csv ('C:/Users/VOLANTE/Desktop/projet_7/stat11.csv', index_col = 0)
+
+stat0 = pd.read_csv(os.path.join('.', 'stat0.csv'), index_col=0)
+stat1 = pd.read_csv(os.path.join('.', 'stat1.csv'), index_col=0)
+stat2 = pd.read_csv(os.path.join('.', 'stat2.csv'), index_col=0)
+stat3 = pd.read_csv(os.path.join('.', 'stat3.csv'), index_col=0)
+stat4 = pd.read_csv(os.path.join('.', 'stat4.csv'), index_col=0)
+stat5 = pd.read_csv(os.path.join('.', 'stat5.csv'), index_col=0)
+stat6 = pd.read_csv(os.path.join('.', 'stat6.csv'), index_col=0)
+stat7 = pd.read_csv(os.path.join('.', 'stat7.csv'), index_col=0)
+stat8 = pd.read_csv(os.path.join('.', 'stat8.csv'), index_col=0)
+stat9 = pd.read_csv(os.path.join('.', 'stat9.csv'), index_col=0)
+stat10 = pd.read_csv(os.path.join('.', 'stat10.csv'), index_col=0)
+stat11 = pd.read_csv(os.path.join('.', 'stat11.csv'), index_col=0)
+
 
 
 # load the model from disk
@@ -34,13 +36,12 @@ GB = pickle.load (open ('xgboost', 'rb'))
     
 
 # Importing our global stats
-stat =  pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_stats.csv', index_col = 0)
+stat = pd.read_csv(os.path.join('.', 'X_stats.csv'), index_col=0)
 
 # Importing our X_train and y_train
-y_train = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/y_train.csv', index_col = 0)
-X_train = pd.read_csv('C:/Users/VOLANTE/anaconda3/envs/OC/P7/X_train.csv', index_col =0)
 
-
+y_train = pd.read_csv(os.path.join('.', 'y_train.csv'), index_col=0)
+X_train = pd.read_csv(os.path.join('.', 'X_train.csv'), index_col=0)
 ############################################################################################################################
 
 st.title('Prêt à dépenser BANK')
