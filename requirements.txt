@@ -76,7 +76,7 @@ packaging
 pandas==1.2.3
 pandocfilters 
 paramiko 
-parso==0.7.0
+parso
 pathspec==0.7.0
 pexpect 
 pickleshare 
