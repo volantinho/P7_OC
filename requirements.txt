@@ -120,7 +120,7 @@ scipy==1.6.2
 seaborn==0.11.1
 Send2Trash 
 shap==0.39.0
-sip==4.19.13
+sip
 six 
 sklearn==0.0
 slicer==0.0.7
