@@ -7,42 +7,8 @@ Created on Sat Apr  3 17:58:41 2021
 
 import pandas as pd
 import streamlit as st
-import numpy as np
-import pickle
-import os
-
-# Files importations####################################################################################################
-
-# 12 statistics table (12 clusters)
-
-stat0 = pd.read_csv(os.path.join('.', 'stat0.csv'), index_col=0)
-stat1 = pd.read_csv(os.path.join('.', 'stat1.csv'), index_col=0)
-stat2 = pd.read_csv(os.path.join('.', 'stat2.csv'), index_col=0)
-stat3 = pd.read_csv(os.path.join('.', 'stat3.csv'), index_col=0)
-stat4 = pd.read_csv(os.path.join('.', 'stat4.csv'), index_col=0)
-stat5 = pd.read_csv(os.path.join('.', 'stat5.csv'), index_col=0)
-stat6 = pd.read_csv(os.path.join('.', 'stat6.csv'), index_col=0)
-stat7 = pd.read_csv(os.path.join('.', 'stat7.csv'), index_col=0)
-stat8 = pd.read_csv(os.path.join('.', 'stat8.csv'), index_col=0)
-stat9 = pd.read_csv(os.path.join('.', 'stat9.csv'), index_col=0)
-stat10 = pd.read_csv(os.path.join('.', 'stat10.csv'), index_col=0)
-stat11 = pd.read_csv(os.path.join('.', 'stat11.csv'), index_col=0)
 
 
-
-# load the model from disk
-km = pickle.load (open ('clustering', 'rb'))
-GB = pickle.load (open ('xgboost', 'rb'))
-    
-
-# Importing our global stats
-stat = pd.read_csv(os.path.join('.', 'X_stats.csv'), index_col=0)
-
-# Importing our X_train and y_train
-
-y_train = pd.read_csv(os.path.join('.', 'y_train.csv'), index_col=0)
-X_train = pd.read_csv(os.path.join('.', 'X_train.csv'), index_col=0)
-############################################################################################################################
 
 st.title('Prêt à dépenser BANK')
 
@@ -54,7 +20,6 @@ st.write('''
 
 # Title on sidebar
 st.sidebar.header('Your informations')
-st.sidebar.write('Please respect the order!')
 
 
 
@@ -62,16 +27,16 @@ def user_input():
     '''Creating a function which generates a DataFrame, accordind to consumer's inputs '''
     
     AGE = st.sidebar.slider('Your age', 21, 69, 40)
-    CNT_CHILDREN = st.sidebar.slider('Number of children', 0, 19, 1) 
-    AMT_INCOME_TOTAL = st.sidebar.number_input( 'Annual Income (Between {}$ and {}$)'.format(stat['AMT_INCOME_TOTAL']['min'],  stat['AMT_INCOME_TOTAL']['max']) , min_value = stat['AMT_INCOME_TOTAL']['min'] , max_value = stat['AMT_INCOME_TOTAL']['max'])
-    DAYS_EMPLOYED = st.sidebar.number_input('Days employed (Between {} and {}'.format(int(stat['DAYS_EMPLOYED']['min']), int(stat['DAYS_EMPLOYED']['max'])),  min_value = int(stat['DAYS_EMPLOYED']['min']),  max_value = int(stat['DAYS_EMPLOYED']['max']))
-    DAYS_REGISTRATION = st.sidebar.number_input('Last registration change (in days, between {} and {})'.format( int(stat['DAYS_REGISTRATION']['min']), int(stat['DAYS_REGISTRATION']['max'])), min_value = int(stat['DAYS_REGISTRATION']['min']), max_value = int(stat['DAYS_REGISTRATION']['max']))
-    DAYS_ID_PUBLISH = st.sidebar.number_input('Last Identity document change (in days, between {} and {})'.format(int(stat['DAYS_ID_PUBLISH']['min']), int(stat['DAYS_ID_PUBLISH']['max'])), min_value = int(stat['DAYS_ID_PUBLISH']['min']), max_value = int(stat['DAYS_ID_PUBLISH']['max']))
-    AMT_GOODS_PRICE = st.sidebar.number_input('Good price Amount (Between {}$ and {}$ allowed)'.format(stat['AMT_GOODS_PRICE']['min'], stat['AMT_GOODS_PRICE']['max']), min_value = stat['AMT_GOODS_PRICE']['min'], max_value = stat['AMT_GOODS_PRICE']['max'])
-    AMT_CREDIT = st.sidebar.number_input('Credit Amount', min_value = stat['AMT_CREDIT']['min'], max_value = (stat['CREDIT_GOOD_PERCENT']['max']) * AMT_GOODS_PRICE)
-    AMT_ANNUITY = st.sidebar.number_input('Annuity Amount', min_value = (stat['CREDIT_ANNUITY_PERCENT']['min'])*AMT_CREDIT, max_value = (stat['ANNUITY_INCOME_PERCENT']['max'])*AMT_INCOME_TOTAL)
-    EXT_SOURCE_2 = st.sidebar.slider('Extern source 2', stat['EXT_SOURCE_2']['min'], stat['EXT_SOURCE_2']['max'], 0.53)
-    EXT_SOURCE_3 = st.sidebar.slider('Extern source 3', stat['EXT_SOURCE_3']['min'], stat['EXT_SOURCE_3']['max'], 0.51)
+    CNT_CHILDREN = st.sidebar.slider('Number of children', 0, 19, 1)
+    AMT_INCOME_TOTAL = st.sidebar.number_input( 'Annual Income (allowed between 26550$ and 9M$)' , min_value = 26550 , max_value = 9000000)
+    DAYS_EMPLOYED = st.sidebar.slider('Days employed', 0, 17912, 2532)
+    DAYS_REGISTRATION = st.sidebar.number_input('Last registration change (in days)', min_value = 0, max_value = 22701)
+    DAYS_ID_PUBLISH = st.sidebar.slider('Last Identity document change (in days)', 0, 7197, 2884)
+    AMT_GOODS_PRICE = st.sidebar.number_input('Good price Amount (between 40500$ and 4.05M$)', min_value = 40500, max_value = 4050000)
+    AMT_CREDIT = st.sidebar.number_input('Credit Amount(allowed between 45000$ and 4.05M$)', min_value = 45000, max_value = 4050000)
+    AMT_ANNUITY = st.sidebar.number_input('Annuity Amount (between 1980$ and 258026$)', 1980, 258026, 27986)
+    EXT_SOURCE_2 = st.sidebar.slider('Extern source 2', 0.0, 1.0, 0.53)
+    EXT_SOURCE_3 = st.sidebar.slider('Extern source 3', 0.0, 1.0, 0.51)
     
     
     
@@ -99,63 +64,24 @@ def user_input():
 # df is the output of our function
 df = user_input()
 
-st.subheader('Your Data. Please check before validate!')
-st.write(df)
+if st.checkbox('See results'):
+     #Printing inputs results
+     st.subheader('Your Data')
+     st.write(df)
 
-########################################################################################################################
-
-# Informations
-if st.button('How does it work?'):
-    st.write('This app is based on analysis of almost 200.000 loans past')
-    st.write('To predict issue of your loan request, we use a machine learning algorithm')
-    st.write('')
-    st.write('We use all your input features and we add 4 important features:')
-    st.write('')
-    st.write('- The amount of your credit / Your total income amount')
-    st.write('- The amount of your annuity / Your total income amount')
-    st.write('- The amount of your annuity / Your credit amount')
-    st.write('- The amount of your credit / Your good price amount')
-    st.write('')
-    st.write('In other words, your input informations must respect some statistical values (according to our bank policy)')
-    st.write('Just below we give you some statistics')
-    st.write('When having completed your informations, you could either see result, or compare your informations with people in the same group as you (actually 12 groups existing)')
-
-###########################################################################################################################
-def stat_explanation():
-    ''' This function returns explanations of descriptive statistics'''
-    
-    
-    st.write('count : Number of persons in the group')
-    st.write('mean : The mean for each feature')
-    st.write('std : The stud for each feature (We can define the stud as the the mean of the deviations from the mean')
-    st.write('Percentile (25%, 50%, 75%) : For exemple 25% : For each feature, 25% of people have a lower (or equal) value than the indicated value and 75% have an higher value') 
-    st.write('min/max : The minimum/maximum value for each feature')
-
-
-
-##############################################################################################################################
-# Printing global statistics when clicking button
-if st.button('Global statistics'):
-    st.write(stat)
-    stat_explanation()
-    
 ##################################################################################################################
-def adding_columns(df):
-    '''This function adds 4 columns according to our model'''
-
-    # Creating our 4 other features for model
-    df['CREDIT_INCOME_PERCENT'] = df['AMT_CREDIT'] / df['AMT_INCOME_TOTAL']
-    df['ANNUITY_INCOME_PERCENT'] = df['AMT_ANNUITY'] / df['AMT_INCOME_TOTAL']
-    df['CREDIT_ANNUITY_PERCENT'] = df['AMT_ANNUITY'] / df['AMT_CREDIT']
-    df['CREDIT_GOOD_PERCENT'] = df['AMT_CREDIT'] / df['AMT_GOODS_PRICE']  
+# Creating our 4 other features for model
+df['CREDIT_INCOME_PERCENT'] = df['AMT_CREDIT'] / df['AMT_INCOME_TOTAL']
+df['ANNUITY_INCOME_PERCENT'] = df['AMT_ANNUITY'] / df['AMT_INCOME_TOTAL']
+df['CREDIT_ANNUITY_PERCENT'] = df['AMT_ANNUITY'] / df['AMT_CREDIT']
+df['CREDIT_GOOD_PERCENT'] = df['AMT_CREDIT'] / df['AMT_GOODS_PRICE']  
 
 
 ##################################################################################################################
 #Encoding AGE
+
+
 def encode(x):
-    '''This function encodes AGE'''
-    
-    
     if 20.0 <x<= 25.0:
         return 0
     elif 25.0 < x <= 30.0:
@@ -178,176 +104,89 @@ def encode(x):
         return 9
     
     
-# Apply    
+    
 df['AGE'] = df['AGE'].apply(encode)
 
 ###################################################################################################################
 
+# Importing our final dataframe used for ML
 
-# According to our model we scale our data
+X_train_des = pd.read_csv('C:/Users/VOLANTE/Desktop/OPEN PYTHON/projet 7/stats.csv', index_col = 0)
+
+y_train = pd.read_csv('C:/Users/VOLANTE/Desktop/OPEN PYTHON/projet 7/y_train_credit_final.csv', index_col = 0)
+X_train = pd.read_csv('C:/Users/VOLANTE/Desktop/OPEN PYTHON/projet 7/X_train_credit_final.csv', index_col = 0)
+
+
+# Stats
+stat = X_train_des.describe()
+
 # MinMaxScaler formula
 # X_scaled = (X - X.min(axis=0)) / (X.max(axis=0) - X.min(axis=0))
 
-def scaling(df):
 
-    df.loc[0, 'CNT_CHILDREN'] = (df.loc[0, 'CNT_CHILDREN'] - stat['CNT_CHILDREN']['min']) / (stat['CNT_CHILDREN']['max'] - stat['CNT_CHILDREN']['min'] )
 
-    df.loc[0, 'AMT_INCOME_TOTAL'] = (df.loc[0, 'AMT_INCOME_TOTAL'] - stat['AMT_INCOME_TOTAL']['min']) / (stat['AMT_INCOME_TOTAL']['max'] - stat['AMT_INCOME_TOTAL']['min']) 
+df.loc[0, 'CNT_CHILDREN'] = (df.loc[0, 'CNT_CHILDREN'] - stat['CNT_CHILDREN']['min']) / (stat['CNT_CHILDREN']['max'] - stat['CNT_CHILDREN']['min'] )
 
-    df.loc[0, 'DAYS_EMPLOYED'] = (df.loc[0, 'DAYS_EMPLOYED'] - stat['DAYS_EMPLOYED']['min']) / (stat['DAYS_EMPLOYED']['max'] - stat['DAYS_EMPLOYED']['min'])
+df.loc[0, 'AMT_INCOME_TOTAL'] = (df.loc[0, 'AMT_INCOME_TOTAL'] - stat['AMT_INCOME_TOTAL']['min']) / (stat['AMT_INCOME_TOTAL']['max'] - stat['AMT_INCOME_TOTAL']['min']) 
 
-    df.loc[0, 'DAYS_REGISTRATION'] = (df.loc[0, 'DAYS_REGISTRATION'] - stat['DAYS_REGISTRATION']['min']) / (stat['DAYS_REGISTRATION']['max'] - stat['DAYS_REGISTRATION']['min'])
+df.loc[0, 'DAYS_EMPLOYED'] = (df.loc[0, 'DAYS_EMPLOYED'] - stat['DAYS_EMPLOYED']['min']) / (stat['DAYS_EMPLOYED']['max'] - stat['DAYS_EMPLOYED']['min'])
 
-    df.loc[0, 'DAYS_ID_PUBLISH'] = (df.loc[0, 'DAYS_ID_PUBLISH'] - stat['DAYS_ID_PUBLISH']['min']) / (stat['DAYS_ID_PUBLISH']['max'] - stat['DAYS_ID_PUBLISH']['min'])
+df.loc[0, 'DAYS_REGISTRATION'] = (df.loc[0, 'DAYS_REGISTRATION'] - stat['DAYS_REGISTRATION']['min']) / (stat['DAYS_REGISTRATION']['max'] - stat['DAYS_REGISTRATION']['min'])
 
-    df.loc[0, 'AMT_GOODS_PRICE'] = (df.loc[0, 'AMT_GOODS_PRICE'] - stat['AMT_GOODS_PRICE']['min']) / (stat['AMT_GOODS_PRICE']['max'] - stat['AMT_GOODS_PRICE']['min'])
+df.loc[0, 'DAYS_ID_PUBLISH'] = (df.loc[0, 'DAYS_ID_PUBLISH'] - stat['DAYS_ID_PUBLISH']['min']) / (stat['DAYS_ID_PUBLISH']['max'] - stat['DAYS_ID_PUBLISH']['min'])
 
-    df.loc[0, 'AMT_CREDIT'] = (df.loc[0, 'AMT_CREDIT'] - stat['AMT_CREDIT']['min']) / (stat['AMT_CREDIT']['max'] - stat['AMT_CREDIT']['min'] )
+df.loc[0, 'AMT_GOODS_PRICE'] = (df.loc[0, 'AMT_GOODS_PRICE'] - stat['AMT_GOODS_PRICE']['min']) / (stat['AMT_GOODS_PRICE']['max'] - stat['AMT_GOODS_PRICE']['min'])
 
-    df.loc[0, 'AMT_ANNUITY'] = (df.loc[0, 'AMT_ANNUITY'] - stat['AMT_ANNUITY']['min']) / (stat['AMT_ANNUITY']['max'] - stat['AMT_ANNUITY']['min'] )
+df.loc[0, 'AMT_CREDIT'] = (df.loc[0, 'AMT_CREDIT'] - stat['AMT_CREDIT']['min']) / (stat['AMT_CREDIT']['max'] - stat['AMT_CREDIT']['min'] )
 
-    df.loc[0, 'EXT_SOURCE_2'] = (df.loc[0, 'EXT_SOURCE_2'] - stat['EXT_SOURCE_2']['min']) / (stat['EXT_SOURCE_2']['max'] - stat['EXT_SOURCE_2']['min'])
+df.loc[0, 'AMT_ANNUITY'] = (df.loc[0, 'AMT_ANNUITY'] - stat['AMT_ANNUITY']['min']) / (stat['AMT_ANNUITY']['max'] - stat['AMT_ANNUITY']['min'] )
 
-    df.loc[0, 'EXT_SOURCE_3'] = (df.loc[0, 'EXT_SOURCE_3'] - stat['EXT_SOURCE_3']['min']) / (stat['EXT_SOURCE_3']['max'] - stat['EXT_SOURCE_3']['min'])
+df.loc[0, 'EXT_SOURCE_2'] = (df.loc[0, 'EXT_SOURCE_2'] - stat['EXT_SOURCE_2']['min']) / (stat['EXT_SOURCE_2']['max'] - stat['EXT_SOURCE_2']['min'])
 
-    df.loc[0, 'CREDIT_INCOME_PERCENT'] = (df.loc[0, 'CREDIT_INCOME_PERCENT'] - stat['CREDIT_INCOME_PERCENT']['min']) / (stat['CREDIT_INCOME_PERCENT']['max'] - stat['CREDIT_INCOME_PERCENT']['min'] )
+df.loc[0, 'EXT_SOURCE_3'] = (df.loc[0, 'EXT_SOURCE_3'] - stat['EXT_SOURCE_3']['min']) / (stat['EXT_SOURCE_3']['max'] - stat['EXT_SOURCE_3']['min'])
 
-    df.loc[0, 'ANNUITY_INCOME_PERCENT'] = (df.loc[0, 'ANNUITY_INCOME_PERCENT'] - stat['ANNUITY_INCOME_PERCENT']['min']) / (stat['ANNUITY_INCOME_PERCENT']['max'] - stat['ANNUITY_INCOME_PERCENT']['min'])
+df.loc[0, 'CREDIT_INCOME_PERCENT'] = (df.loc[0, 'CREDIT_INCOME_PERCENT'] - stat['CREDIT_INCOME_PERCENT']['min']) / (stat['CREDIT_INCOME_PERCENT']['max'] - stat['CREDIT_INCOME_PERCENT']['min'] )
 
-    df.loc[0, 'CREDIT_ANNUITY_PERCENT'] = (df.loc[0, 'CREDIT_ANNUITY_PERCENT'] - stat['CREDIT_ANNUITY_PERCENT']['min']) / (stat['CREDIT_ANNUITY_PERCENT']['max'] - stat['CREDIT_ANNUITY_PERCENT']['min'])
+df.loc[0, 'ANNUITY_INCOME_PERCENT'] = (df.loc[0, 'ANNUITY_INCOME_PERCENT'] - stat['ANNUITY_INCOME_PERCENT']['min']) / (stat['ANNUITY_INCOME_PERCENT']['max'] - stat['ANNUITY_INCOME_PERCENT']['min'])
 
-    df.loc[0, 'CREDIT_GOOD_PERCENT'] = (df.loc[0, 'CREDIT_GOOD_PERCENT'] - stat['CREDIT_GOOD_PERCENT']['min']) / (stat['CREDIT_GOOD_PERCENT']['max'] - stat['CREDIT_GOOD_PERCENT']['min'] )
+df.loc[0, 'CREDIT_ANNUITY_PERCENT'] = (df.loc[0, 'CREDIT_ANNUITY_PERCENT'] - stat['CREDIT_ANNUITY_PERCENT']['min']) / (stat['CREDIT_ANNUITY_PERCENT']['max'] - stat['CREDIT_ANNUITY_PERCENT']['min'])
+
+df.loc[0, 'CREDIT_GOOD_PERCENT'] = (df.loc[0, 'CREDIT_GOOD_PERCENT'] - stat['CREDIT_GOOD_PERCENT']['min']) / (stat['CREDIT_GOOD_PERCENT']['max'] - stat['CREDIT_GOOD_PERCENT']['min'] )
+
+####################################################################################################################
+
+# Importing our best model
+from sklearn.ensemble import GradientBoostingClassifier
+
+GB = GradientBoostingClassifier(max_depth = 8, max_features = 'sqrt',
+                           min_samples_leaf = 50, min_samples_split = 1000,
+                           random_state = 10, subsample = 0.8)
 
 
 ####################################################################################################################
 
+# Fitting model
+GB.fit(X_train, y_train.values.ravel())
 
-def preprocessing (X_train):
-    '''Global preprocessing for X_train'''
+print(df)
+# Prediction
+prediction = GB.predict(df)
+
+# Printing result for consumer
+if prediction == 0:
+    st.write('ACCEPTED')
+else :
+    st.write('REFUSED')
     
-    
-    # Preprocessing
-    from sklearn.preprocessing import MinMaxScaler
-
-    # Giving 0 for min and 1 for max.. for the rest the proportion
-    scaler = MinMaxScaler()
-
-    #Scaling X_train excepted  'age'
-    for col in X_train.drop('AGE', axis = 1).columns :
-        X_train.loc[:, col] = scaler.fit_transform(X_train[col].values.reshape(-1, 1))
-    
-    # Encoding 'AGE'
-    from sklearn.preprocessing import LabelEncoder
-    
-    # Creating OneHotEncoder
-    encoder = LabelEncoder()
-
-    # Encoding 'AGE' for X_train
-    X_train['AGE'] = encoder.fit_transform(X_train['AGE'].values.reshape(-1, 1))
 
 
 
 
 
-####################################################################################################################
 
-if st.sidebar.button('Validate/See results'):
-    
-    adding_columns(df)
-    scaling(df)
-    preprocessing(X_train)
-    
-    # Converting in arrays numpy
-    df = np.array(df)
-    X_train =  np.array(X_train)
-    y_train =  np.array(y_train)
 
-    # Prediction
-    prediction = GB.predict(df)
-    prob = GB.predict_proba(df)
-    
-   
-    
-    if prediction == 0:
-        st.write('ACCEPTED', prob)
-        st.write("Under 0 you have the probability you won't be in defaut payment")
-        st.write("Under 1 you have the probability you will be in defaut payment")
-    else:
-        st.write('REFUSED', prob)
-        st.write("Under 0 you have the probability that you won't be in defaut payment")
-        st.write("Under 1 you have the probability you will be in defaut payment")
 
-    
-        
-if st.sidebar.button('Compare'):
-     
-    adding_columns(df)
-    scaling(df)
-    df = np.array(df)
-     
-    # Getting prediction
-    pred = km.predict(df)
-    
-    if pred == 0:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat0)
-        stat_explanation()
-        
-    elif pred == 1:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat1)
-        stat_explanation()
-        
-    elif pred == 2:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat2)
-        stat_explanation()
-        
-    elif pred == 3:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat3)
-        stat_explanation()
-        
-    elif pred == 4:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat4)
-        stat_explanation()
-        
-    elif pred == 5:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat5)
-        stat_explanation()
-        
-    elif pred == 6:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat6)
-        stat_explanation()
-        
-    elif pred == 7:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat7)
-        stat_explanation()
-        
-    elif pred == 8:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat8)
-        stat_explanation()
-        
-    elif pred == 9:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat9)
-        stat_explanation()
-        
-    elif pred == 10:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat10)
-        stat_explanation()
-        
-    else:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat11)
-        stat_explanation()
-        
+
 
 
 
