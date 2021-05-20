@@ -23,20 +23,17 @@ stat4 = pd.read_csv(os.path.join('.', 'stat4.csv'), index_col=0)
 stat5 = pd.read_csv(os.path.join('.', 'stat5.csv'), index_col=0)
 stat6 = pd.read_csv(os.path.join('.', 'stat6.csv'), index_col=0)
 stat7 = pd.read_csv(os.path.join('.', 'stat7.csv'), index_col=0)
-stat8 = pd.read_csv(os.path.join('.', 'stat8.csv'), index_col=0)
-stat9 = pd.read_csv(os.path.join('.', 'stat9.csv'), index_col=0)
-stat10 = pd.read_csv(os.path.join('.', 'stat10.csv'), index_col=0)
-stat11 = pd.read_csv(os.path.join('.', 'stat11.csv'), index_col=0)
+
 
 
 
 # load the model from disk
-km = pickle.load (open ('clustering', 'rb'))
-GB = pickle.load (open ('xgboost', 'rb'))
+km = pickle.load (open ('clustering_8', 'rb'))
+XGB = pickle.load (open ('XGBClassifier', 'rb'))
     
 
 # Importing our global stats
-stat = pd.read_csv(os.path.join('.', 'X_stats.csv'), index_col=0)
+stat = pd.read_csv(os.path.join('.', 'global_stats.csv'), index_col=0)
 
 # Importing our X_train and y_train
 
@@ -62,22 +59,41 @@ def user_input():
     '''Creating a function which generates a DataFrame, accordind to consumer's inputs '''
     
     AGE = st.sidebar.slider('Your age', 21, 69, 40)
-    CNT_CHILDREN = st.sidebar.slider('Number of children', 0, 19, 1) 
     AMT_INCOME_TOTAL = st.sidebar.number_input( 'Annual Income (Between {}$ and {}$)'.format(stat['AMT_INCOME_TOTAL']['min'],  stat['AMT_INCOME_TOTAL']['max']) , min_value = stat['AMT_INCOME_TOTAL']['min'] , max_value = stat['AMT_INCOME_TOTAL']['max'])
-    DAYS_EMPLOYED = st.sidebar.number_input('Days employed (Between {} and {}'.format(int(stat['DAYS_EMPLOYED']['min']), int(stat['DAYS_EMPLOYED']['max'])),  min_value = int(stat['DAYS_EMPLOYED']['min']),  max_value = int(stat['DAYS_EMPLOYED']['max']))
+    DAYS_EMPLOYED = st.sidebar.number_input('Days employed (Between {} and {})'.format(int(stat['DAYS_EMPLOYED']['min']), int(stat['DAYS_EMPLOYED']['max'])),  min_value = int(stat['DAYS_EMPLOYED']['min']),  max_value = int(stat['DAYS_EMPLOYED']['max']))
     DAYS_REGISTRATION = st.sidebar.number_input('Last registration change (in days, between {} and {})'.format( int(stat['DAYS_REGISTRATION']['min']), int(stat['DAYS_REGISTRATION']['max'])), min_value = int(stat['DAYS_REGISTRATION']['min']), max_value = int(stat['DAYS_REGISTRATION']['max']))
     DAYS_ID_PUBLISH = st.sidebar.number_input('Last Identity document change (in days, between {} and {})'.format(int(stat['DAYS_ID_PUBLISH']['min']), int(stat['DAYS_ID_PUBLISH']['max'])), min_value = int(stat['DAYS_ID_PUBLISH']['min']), max_value = int(stat['DAYS_ID_PUBLISH']['max']))
     AMT_GOODS_PRICE = st.sidebar.number_input('Good price Amount (Between {}$ and {}$ allowed)'.format(stat['AMT_GOODS_PRICE']['min'], stat['AMT_GOODS_PRICE']['max']), min_value = stat['AMT_GOODS_PRICE']['min'], max_value = stat['AMT_GOODS_PRICE']['max'])
-    AMT_CREDIT = st.sidebar.number_input('Credit Amount', min_value = stat['AMT_CREDIT']['min'], max_value = (stat['CREDIT_GOOD_PERCENT']['max']) * AMT_GOODS_PRICE)
-    AMT_ANNUITY = st.sidebar.number_input('Annuity Amount', min_value = (stat['CREDIT_ANNUITY_PERCENT']['min'])*AMT_CREDIT, max_value = (stat['ANNUITY_INCOME_PERCENT']['max'])*AMT_INCOME_TOTAL)
+    AMT_CREDIT = st.sidebar.number_input('Credit Amount', min_value = stat['AMT_CREDIT']['min'], max_value = stat['AMT_CREDIT']['max'])
+    AMT_ANNUITY = st.sidebar.number_input('Annuity Amount', min_value = stat['AMT_ANNUITY']['min'], max_value = stat['AMT_ANNUITY']['max'])
     EXT_SOURCE_2 = st.sidebar.slider('Extern source 2', stat['EXT_SOURCE_2']['min'], stat['EXT_SOURCE_2']['max'], 0.53)
     EXT_SOURCE_3 = st.sidebar.slider('Extern source 3', stat['EXT_SOURCE_3']['min'], stat['EXT_SOURCE_3']['max'], 0.51)
+    
+    # Creating selectbox for rating region 
+    values1 = ['<select>',1, 2, 3]
+    default_ix_1 = values1.index(1)
+    REGION_RATING_CLIENT_W_CITY = st.sidebar.selectbox('Rating your region (taking city into account)', values1, index=default_ix_1)
+    
+    # Creating selectbox for REG_CITY_NOT_LIVE_CITY
+    values2 = ['<select>',0, 1]
+    default_ix_2 = values2.index(0)
+    REG_CITY_NOT_LIVE_CITY = st.sidebar.selectbox('If your permanent adress does not match your contact adress select "1". Else select "0"', values2, index=default_ix_2)
+    
+     # Creating selectbox for REG_CITY_NOT_WORK_CITY
+    values2 = ['<select>',0, 1]
+    default_ix_2 = values2.index(0)
+    REG_CITY_NOT_WORK_CITY = st.sidebar.selectbox('If your permanent adress does not match your work adress select "1". Else select "0"', values2, index=default_ix_2)
+    
+    
+     # Creating selectbox for LIVE_CITY_NOT_WORK_CITY
+    values2 = ['<select>',0, 1]
+    default_ix_2 = values2.index(0)
+    LIVE_CITY_NOT_WORK_CITY = st.sidebar.selectbox('If your contact adress does not match your work adress select "1". Else select "0"', values2, index=default_ix_2)
     
     
     
     # Creating a dictionary
     data = {'AGE' : AGE,
-            'CNT_CHILDREN' : CNT_CHILDREN,
             'AMT_INCOME_TOTAL' : AMT_INCOME_TOTAL,
             'DAYS_EMPLOYED' : DAYS_EMPLOYED,
             'DAYS_REGISTRATION' : DAYS_REGISTRATION,
@@ -87,13 +103,19 @@ def user_input():
             'AMT_ANNUITY' : AMT_ANNUITY,
             'EXT_SOURCE_2' : EXT_SOURCE_2,
             'EXT_SOURCE_3' : EXT_SOURCE_3,
-            
+            'REGION_RATING_CLIENT_W_CITY' : REGION_RATING_CLIENT_W_CITY,
+            'REG_CITY_NOT_LIVE_CITY' : REG_CITY_NOT_LIVE_CITY,
+            'REG_CITY_NOT_WORK_CITY' : REG_CITY_NOT_WORK_CITY,
+            'LIVE_CITY_NOT_WORK_CITY' :  LIVE_CITY_NOT_WORK_CITY,
            }
    
     # Creating DataFrame
     parameters = pd.DataFrame(data, index = [0])
     
-    # Returning DataFrame created
+    # Adding 
+    parameters['CREDIT_INCOME_PERCENT'] = parameters['AMT_CREDIT'] / parameters['AMT_INCOME_TOTAL']
+    
+   # Returning DataFrame created
     return parameters
 
 # df is the output of our function
@@ -106,15 +128,12 @@ st.write(df)
 
 # Informations
 if st.button('How does it work?'):
-    st.write('This app is based on analysis of almost 200.000 loans past')
+    st.write('This app is based on analysis of almost 300.000 loans past')
     st.write('To predict issue of your loan request, we use a machine learning algorithm')
     st.write('')
-    st.write('We use all your input features and we add 4 important features:')
+    st.write('We use all your input features and we add one important feature:')
     st.write('')
     st.write('- The amount of your credit / Your total income amount')
-    st.write('- The amount of your annuity / Your total income amount')
-    st.write('- The amount of your annuity / Your credit amount')
-    st.write('- The amount of your credit / Your good price amount')
     st.write('')
     st.write('In other words, your input informations must respect some statistical values (according to our bank policy)')
     st.write('Just below we give you some statistics')
@@ -138,16 +157,6 @@ def stat_explanation():
 if st.button('Global statistics'):
     st.write(stat)
     stat_explanation()
-    
-##################################################################################################################
-def adding_columns(df):
-    '''This function adds 4 columns according to our model'''
-
-    # Creating our 4 other features for model
-    df['CREDIT_INCOME_PERCENT'] = df['AMT_CREDIT'] / df['AMT_INCOME_TOTAL']
-    df['ANNUITY_INCOME_PERCENT'] = df['AMT_ANNUITY'] / df['AMT_INCOME_TOTAL']
-    df['CREDIT_ANNUITY_PERCENT'] = df['AMT_ANNUITY'] / df['AMT_CREDIT']
-    df['CREDIT_GOOD_PERCENT'] = df['AMT_CREDIT'] / df['AMT_GOODS_PRICE']  
 
 
 ##################################################################################################################
@@ -190,7 +199,7 @@ df['AGE'] = df['AGE'].apply(encode)
 
 def scaling(df):
 
-    df.loc[0, 'CNT_CHILDREN'] = (df.loc[0, 'CNT_CHILDREN'] - stat['CNT_CHILDREN']['min']) / (stat['CNT_CHILDREN']['max'] - stat['CNT_CHILDREN']['min'] )
+    
 
     df.loc[0, 'AMT_INCOME_TOTAL'] = (df.loc[0, 'AMT_INCOME_TOTAL'] - stat['AMT_INCOME_TOTAL']['min']) / (stat['AMT_INCOME_TOTAL']['max'] - stat['AMT_INCOME_TOTAL']['min']) 
 
@@ -212,59 +221,146 @@ def scaling(df):
 
     df.loc[0, 'CREDIT_INCOME_PERCENT'] = (df.loc[0, 'CREDIT_INCOME_PERCENT'] - stat['CREDIT_INCOME_PERCENT']['min']) / (stat['CREDIT_INCOME_PERCENT']['max'] - stat['CREDIT_INCOME_PERCENT']['min'] )
 
-    df.loc[0, 'ANNUITY_INCOME_PERCENT'] = (df.loc[0, 'ANNUITY_INCOME_PERCENT'] - stat['ANNUITY_INCOME_PERCENT']['min']) / (stat['ANNUITY_INCOME_PERCENT']['max'] - stat['ANNUITY_INCOME_PERCENT']['min'])
+scaling(df)
+###########################################################################################################################   
+# OneHotEncoding df columns concerned
+def onehot(df):
+    
+    if df.loc[0, 'REGION_RATING_CLIENT_W_CITY'] == 1:
+    
+        df['REGION_RATING_CLIENT_W_CITY_1'] = 1
+        df['REGION_RATING_CLIENT_W_CITY_2'] = 0
+        df['REGION_RATING_CLIENT_W_CITY_3'] = 0
+                                    
+        if df.loc[0, 'REG_CITY_NOT_LIVE_CITY'] == 0:
+    
+            df['REG_CITY_NOT_LIVE_CITY_0'] = 1
+            df['REG_CITY_NOT_LIVE_CITY_1'] = 0
+        else:
+            df['REG_CITY_NOT_LIVE_CITY_0'] = 0
+            df['REG_CITY_NOT_LIVE_CITY_1'] = 1
+            
 
-    df.loc[0, 'CREDIT_ANNUITY_PERCENT'] = (df.loc[0, 'CREDIT_ANNUITY_PERCENT'] - stat['CREDIT_ANNUITY_PERCENT']['min']) / (stat['CREDIT_ANNUITY_PERCENT']['max'] - stat['CREDIT_ANNUITY_PERCENT']['min'])
+        if df.loc[0, 'REG_CITY_NOT_WORK_CITY'] == 0:
+    
+            df['REG_CITY_NOT_WORK_CITY_0'] = 1
+            df['REG_CITY_NOT_WORK_CITY_1'] = 0
+        else:
+            df['REG_CITY_NOT_WORK_CITY_0'] = 0
+            df['REG_CITY_NOT_WORK_CITY_1'] = 1
+      
+        if df.loc[0, 'LIVE_CITY_NOT_WORK_CITY'] == 0:
+    
+            df['LIVE_CITY_NOT_WORK_CITY_0'] = 1
+            df['LIVE_CITY_NOT_WORK_CITY_1'] = 0
+        else:
+            df['LIVE_CITY_NOT_WORK_CITY_0'] = 0
+            df['LIVE_CITY_NOT_WORK_CITY_1'] = 1
+            
+    elif  df.loc[0, 'REGION_RATING_CLIENT_W_CITY'] == 2:
+        
+        df['REGION_RATING_CLIENT_W_CITY_1'] = 0
+        df['REGION_RATING_CLIENT_W_CITY_2'] = 1
+        df['REGION_RATING_CLIENT_W_CITY_3'] = 0
+        
+        
+        if df.loc[0, 'REG_CITY_NOT_LIVE_CITY'] == 0:
+    
+            df['REG_CITY_NOT_LIVE_CITY_0'] = 1
+            df['REG_CITY_NOT_LIVE_CITY_1'] = 0
+        else:
+            df['REG_CITY_NOT_LIVE_CITY_0'] = 0
+            df['REG_CITY_NOT_LIVE_CITY_1'] = 1
 
-    df.loc[0, 'CREDIT_GOOD_PERCENT'] = (df.loc[0, 'CREDIT_GOOD_PERCENT'] - stat['CREDIT_GOOD_PERCENT']['min']) / (stat['CREDIT_GOOD_PERCENT']['max'] - stat['CREDIT_GOOD_PERCENT']['min'] )
+
+        if df.loc[0, 'REG_CITY_NOT_WORK_CITY'] == 0:
+    
+            df['REG_CITY_NOT_WORK_CITY_0'] = 1
+            df['REG_CITY_NOT_WORK_CITY_1'] = 0
+        else:
+            df['REG_CITY_NOT_WORK_CITY_0'] = 0
+            df['REG_CITY_NOT_WORK_CITY_1'] = 1
+      
+        if df.loc[0, 'LIVE_CITY_NOT_WORK_CITY'] == 0:
+    
+            df['LIVE_CITY_NOT_WORK_CITY_0'] = 1
+            df['LIVE_CITY_NOT_WORK_CITY_1'] = 0
+        else:
+            df['LIVE_CITY_NOT_WORK_CITY_0'] = 0
+            df['LIVE_CITY_NOT_WORK_CITY_1'] = 1
+            
+    elif df.loc[0, 'REGION_RATING_CLIENT_W_CITY'] == 3:
+        
+        df['REGION_RATING_CLIENT_W_CITY_1'] = 0
+        df['REGION_RATING_CLIENT_W_CITY_2'] = 0
+        df['REGION_RATING_CLIENT_W_CITY_3'] = 1
+        
+        if df.loc[0, 'REG_CITY_NOT_LIVE_CITY'] == 0:
+    
+            df['REG_CITY_NOT_LIVE_CITY_0'] = 1
+            df['REG_CITY_NOT_LIVE_CITY_1'] = 0
+        else:
+            df['REG_CITY_NOT_LIVE_CITY_0'] = 0
+            df['REG_CITY_NOT_LIVE_CITY_1'] = 1
 
 
-####################################################################################################################
+        if df.loc[0, 'REG_CITY_NOT_WORK_CITY'] == 0:
+    
+            df['REG_CITY_NOT_WORK_CITY_0'] = 1
+            df['REG_CITY_NOT_WORK_CITY_1'] = 0
+        else:
+            df['REG_CITY_NOT_WORK_CITY_0'] = 0
+            df['REG_CITY_NOT_WORK_CITY_1'] = 1
+      
+        if df.loc[0, 'LIVE_CITY_NOT_WORK_CITY'] == 0:
+    
+            df['LIVE_CITY_NOT_WORK_CITY_0'] = 1
+            df['LIVE_CITY_NOT_WORK_CITY_1'] = 0
+        else:
+            df['LIVE_CITY_NOT_WORK_CITY_0'] = 0
+            df['LIVE_CITY_NOT_WORK_CITY_1'] = 1
 
-
-def preprocessing (X_train):
-    '''Global preprocessing for X_train'''
+    df.drop(['REGION_RATING_CLIENT_W_CITY', 'REG_CITY_NOT_LIVE_CITY', 'REG_CITY_NOT_WORK_CITY', 'LIVE_CITY_NOT_WORK_CITY'], axis = 1, inplace = True)
+#####################################################################################################################################
+#Encoding AGE
+def other_encode(x):
+    '''This function encodes AGE'''
     
     
-    # Preprocessing
-    from sklearn.preprocessing import MinMaxScaler
-
-    # Giving 0 for min and 1 for max.. for the rest the proportion
-    scaler = MinMaxScaler()
-
-    #Scaling X_train excepted  'age'
-    for col in X_train.drop('AGE', axis = 1).columns :
-        X_train.loc[:, col] = scaler.fit_transform(X_train[col].values.reshape(-1, 1))
+    if 20.0 <x<= 25.0:
+        return 22.5
+    elif 25.0 < x <= 30.0:
+        return 27.5
+    elif 30.0 < x <= 35.0:
+        return 32.5
+    elif 35.0 < x <= 40.0:
+        return 37.5
+    elif 40.0 < x <= 45.0:
+        return 42.5
+    elif 45.0 < x <= 50.0:
+        return 47.5
+    elif 50.0 < x <= 55.0:
+        return 52.5
+    elif 55.0 < x <= 60.0:
+        return 57.5
+    elif 60.0 < x <= 65.0:
+        return 62.5
+    else:
+        return 67.5
     
-    # Encoding 'AGE'
-    from sklearn.preprocessing import LabelEncoder
-    
-    # Creating OneHotEncoder
-    encoder = LabelEncoder()
+#####################################################################################################################################
 
-    # Encoding 'AGE' for X_train
-    X_train['AGE'] = encoder.fit_transform(X_train['AGE'].values.reshape(-1, 1))
-
-
-
-
-
-####################################################################################################################
 
 if st.sidebar.button('Validate/See results'):
     
-    adding_columns(df)
-    scaling(df)
-    preprocessing(X_train)
     
-    # Converting in arrays numpy
-    df = np.array(df)
-    X_train =  np.array(X_train)
-    y_train =  np.array(y_train)
+    scaling(df)
+    onehot(df)
+
 
     # Prediction
-    prediction = GB.predict(df)
-    prob = GB.predict_proba(df)
+    prediction = XGB.predict(df)
+    prob = XGB.predict_proba(df)
     
    
     
@@ -281,10 +377,8 @@ if st.sidebar.button('Validate/See results'):
         
 if st.sidebar.button('Compare'):
      
-    adding_columns(df)
-    scaling(df)
-    df = np.array(df)
-     
+    # Apply    
+    df['AGE'] = df['AGE'].apply(other_encode)
     # Getting prediction
     pred = km.predict(df)
     
@@ -328,26 +422,7 @@ if st.sidebar.button('Compare'):
         st.write(stat7)
         stat_explanation()
         
-    elif pred == 8:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat8)
-        stat_explanation()
-        
-    elif pred == 9:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat9)
-        stat_explanation()
-        
-    elif pred == 10:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat10)
-        stat_explanation()
-        
-    else:
-        st.write('Satistics of the group you belong to:')
-        st.write(stat11)
-        stat_explanation()
-        
+   
 
 
 
