@@ -1,1 +1,1 @@
-https://github.com/volantinho/P7_OC/blob/main/application.py
+https://share.streamlit.io/volantinho/P7_oc/main/application.py
