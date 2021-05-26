@@ -1,1 +1,0 @@
-https://share.streamlit.io/volantinho/P7_oc/main/application.py
