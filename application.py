@@ -56,7 +56,7 @@ XGB = pickle.load (open ('XGBClassifier', 'rb'))
     
 
 # Importing our global stats
-stat = pd.read_csv(os.path.join('.', 'global_stats.csv'), index_col=0)
+stat = pd.read_csv(os.path.join('.', 'Xglobal_describe.csv'), index_col=0)
 
 # Importing our X_train and y_train
 
