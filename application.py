@@ -13,7 +13,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-
+import shap
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -45,14 +45,14 @@ X5 =  pd.read_csv(os.path.join('.', 'X5.csv'), index_col=0)
 X6 =  pd.read_csv(os.path.join('.', 'X6.csv'), index_col=0)
 X7 =  pd.read_csv(os.path.join('.', 'X7.csv'), index_col=0)
 X8 =  pd.read_csv(os.path.join('.', 'X8.csv'), index_col=0)
-
-
+X9 =  pd.read_csv(os.path.join('.', 'X9.csv'), index_col=0)
+X10 =  pd.read_csv(os.path.join('.', 'X10.csv'), index_col=0)
 
 
 
 # load the model from disk
-km = pickle.load (open ('clustering_9', 'rb'))
-XGB = pickle.load (open ('XGBClassifier', 'rb'))
+km = pickle.load (open ('clustering_11', 'rb'))
+XGB = pickle.load (open ('RandomForestClassifier', 'rb'))
     
 
 # Importing our global stats
@@ -426,6 +426,12 @@ if checkbox1:
       print_stats(stat, X)     
 ##############################################################################################################################
 
+import streamlit.components.v1 as components
+
+def st_shap(plot, height=None):
+    shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
+    components.html(shap_html, height=height)
+
 
 
 if st.sidebar.button('Validate/See results'):
@@ -440,20 +446,40 @@ if st.sidebar.button('Validate/See results'):
     # Prediction
     prediction = XGB.predict(df)
     prob = XGB.predict_proba(df)
+    # Create Tree Explainer object that can calculate shap values
+    explainer = shap.TreeExplainer(XGB)
+   
+    # Calculate Shap values
+    choosen_instance = df.loc[[0]]
+    shap_values = explainer.shap_values(choosen_instance)
+    
+    
+    
+
     
    
+    
     # Printing results
     if prediction == 0:
         st.write('ACCEPTED', prob)
         st.write("Under 0 you have the probability you won't be in defaut payment")
         st.write("Under 1 you have the probability you will be in defaut payment")
-    else:
+        st.write('Comprehension of acceptance:')
+        # visualize the first prediction's explanation (use matplotlib=True to avoid Javascript)
+        st_shap(shap.force_plot(explainer.expected_value[1], shap_values[1], choosen_instance))
+        st.write('In bolt you can find your default payment probabilty')
+        st.write('In red you find all features that increase this probability')
+        st.write('In blue you find all features that decrease this probability')
+        
+    else:    
         st.write('REFUSED', prob)
         st.write("Under 0 you have the probability that you won't be in defaut payment")
         st.write("Under 1 you have the probability you will be in defaut payment")
-
-    
-        
+        st.write('Comprehension of the refuse:')
+        st_shap(shap.force_plot(explainer.expected_value[1], shap_values[1], choosen_instance))
+        st.write('In bolt you can find your default payment probabilty')
+        st.write('In red you find all features that increase this probability')
+        st.write('In blue you find all features that decrease this probability')
 
 checkbox2 = st.checkbox('Statistics of the group you belong to:')
     
@@ -498,9 +524,17 @@ if checkbox2:
             
         print_stats(stat7, X7)
             
-    else:
+    elif pred == 8:
             
         print_stats(stat8, X8)
+        
+    elif pred == 9:
+        
+        print_stats(stat9, X9)
+        
+    else:
+        
+        print_stats(stat10, X10)
             
         
    
